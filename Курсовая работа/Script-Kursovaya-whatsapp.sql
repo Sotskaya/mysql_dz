@@ -9,6 +9,9 @@ CREATE TABLE users (
  middle_name VARCHAR(255) COMMENT 'отчество пользователя',
   last_name VARCHAR(255) COMMENT 'фамилия пользователя',
   nick_name VARCHAR(255) COMMENT 'ник пользователя'
+  birthday date NOT NULL COMMENT 'Дата рождения',
+  gender enum('M','F') NOT NULL COMMENT 'Пол',
+  phone varchar(12) NOT NULL COMMENT 'Номер телефона пользователя',
 ) COMMENT = 'пользователи';
 
 -- 2.	Таблица статусов
@@ -57,6 +60,7 @@ DROP TABLE IF EXISTS personal_chat;
   from_user_id int unsigned NOT NULL COMMENT 'Ссылка на отправителя сообщения',
   to_user_id int unsigned NOT NULL COMMENT 'Ссылка на получателя сообщения',
   body text NOT NULL COMMENT 'Текст сообщения',
+  media_id int unsigned COMMENT 'ссылка на медиа',
   created_at datetime DEFAULT CURRENT_TIMESTAMP COMMENT 'Время создания строки'
  ) COMMENT = 'таблица со списком личных чатов (сообщений)';
  
@@ -80,19 +84,44 @@ DROP TABLE IF EXISTS groupe;
 ALTER TABLE users_groupe ADD CONSTRAINT users_groupe_user_id FOREIGN KEY (id_users) REFERENCES users(id); 
 ALTER TABLE users_groupe ADD CONSTRAINT users_groupe_groupe_id FOREIGN KEY (id_groupe) REFERENCES groupe(id); 
   
--- 8. таблица груповых сообщений
+-- 8. таблица групповых сообщений
   DROP TABLE IF EXISTS group_chat;
   CREATE TABLE group_chat (
   id INT UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY COMMENT 'Идентификатор строки',
   from_user_id int unsigned NOT NULL COMMENT 'Ссылка на отправителя сообщения',
-  to_user_id int unsigned NOT NULL COMMENT 'Ссылка на получателя сообщения',
+  to_group_id int unsigned NOT NULL COMMENT 'Ссылка на чат группы ',
   body text NOT NULL COMMENT 'Текст сообщения',
+  media_id int unsigned COMMENT 'ссылка на медиа',
   created_at datetime DEFAULT CURRENT_TIMESTAMP COMMENT 'Время создания строки'
  ) COMMENT = 'список групповых чатов';
  
 ALTER TABLE personal_chat ADD CONSTRAINT messages_from_user_id FOREIGN KEY (from_user_id) REFERENCES users (id); 
 ALTER TABLE personal_chat add CONSTRAINT messages_to_user_id FOREIGN KEY (to_user_id) REFERENCES users (id);
 
+ALTER TABLE group_chat ADD CONSTRAINT group_chat_user_id FOREIGN KEY (from_user_id) REFERENCES users (id); 
+ALTER TABLE group_chat add CONSTRAINT group_chat_to_group_id FOREIGN KEY (to_group_id) REFERENCES groupe (id);
 
 
+-- 9. Таблица медиа
+DROP TABLE IF EXISTS media;
+CREATE TABLE media (
+  id int unsigned NOT NULL AUTO_INCREMENT PRIMARY KEY COMMENT 'Идентификатор строки',
+  filename varchar(255) NOT NULL COMMENT 'Полный путь к файлу',
+  media_type_id int unsigned NOT NULL COMMENT 'Ссылка на тип файла',
+  metadata VARCHAR(255) COMMENT 'Метаданные',
+  user_id int unsigned NOT NULL COMMENT 'Ссылка на пользователя',
+  created_at datetime DEFAULT CURRENT_TIMESTAMP COMMENT 'Время создания строки'
+  ) COMMENT = 'Таблица медиа';
 
+ALTER TABLE personal_chat ADD CONSTRAINT personal_chat_media_id FOREIGN KEY (media_id) REFERENCES media(id); 
+ALTER TABLE group_chat add CONSTRAINT group_chat_media_id FOREIGN KEY (media_id) REFERENCES media(id);
+ALTER TABLE media add CONSTRAINT media_user_id FOREIGN KEY (user_id) REFERENCES users(id);
+
+-- 10. Таблица типов медиа
+DROP TABLE IF EXISTS media_types;
+CREATE TABLE media_types (
+  id int unsigned NOT NULL AUTO_INCREMENT PRIMARY KEY COMMENT 'Идентификатор строки',
+  name varchar(255) NOT NULL COMMENT 'название типа файла'
+  ) COMMENT = 'Таблица типов медиа'; 
+ 
+ ALTER TABLE media ADD CONSTRAINT media_media_types_id FOREIGN KEY (media_type_id) REFERENCES media_types(id); 
