@@ -37,5 +37,30 @@ limit 1
 
 
 -- 4. сколько пользователей старше 10 лет?
+SELECT *
+, round(((TO_DAYS(NOW()) - TO_DAYS(birthday))/365.25),0) as age
+from users
+ where ((TO_DAYS(NOW()) - TO_DAYS(birthday))/365.25) >10
+;
 
--- 5. вывести контакты, которые встречаются и в избранных и в заблокированных 
+-- 5. Найти 3 пользователей, которые проявляют наибольшую активность 
+-- Считаем активность - это кол-во сообщений и медиа в групповых и личных чатах
+
+with cte as 
+(
+select u.id, u.nick_name ,
+	count(gc.id) as gc_cnt, 
+	count(m.id) as media_cnt, 
+	count(pc.id) as pc_cnt
+
+from users u 
+left join group_chat gc on u.id = gc.from_user_id 
+left join personal_chat pc on u.id = pc.from_user_id 
+left join media m on u.id = m.user_id 
+group by u.id ,u.nick_name
+)
+
+select nick_name, gc_cnt + media_cnt + pc_cnt as cnt
+from cte
+order by cnt desc
+limit 3;

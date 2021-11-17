@@ -16,6 +16,38 @@
 /*!40111 SET @OLD_SQL_NOTES=@@SQL_NOTES, SQL_NOTES=0 */;
 
 --
+-- Temporary view structure for view `age`
+--
+
+DROP TABLE IF EXISTS `age`;
+/*!50001 DROP VIEW IF EXISTS `age`*/;
+SET @saved_cs_client     = @@character_set_client;
+/*!50503 SET character_set_client = utf8mb4 */;
+/*!50001 CREATE VIEW `age` AS SELECT 
+ 1 AS `id`,
+ 1 AS `first_name`,
+ 1 AS `last_name`,
+ 1 AS `age`*/;
+SET character_set_client = @saved_cs_client;
+
+--
+-- Temporary view structure for view `all_chats`
+--
+
+DROP TABLE IF EXISTS `all_chats`;
+/*!50001 DROP VIEW IF EXISTS `all_chats`*/;
+SET @saved_cs_client     = @@character_set_client;
+/*!50503 SET character_set_client = utf8mb4 */;
+/*!50001 CREATE VIEW `all_chats` AS SELECT 
+ 1 AS `id`,
+ 1 AS `from_user_id`,
+ 1 AS `to_group_id`,
+ 1 AS `body`,
+ 1 AS `media_id`,
+ 1 AS `created_at`*/;
+SET character_set_client = @saved_cs_client;
+
+--
 -- Table structure for table `blocked_users`
 --
 
@@ -38,7 +70,7 @@ CREATE TABLE `blocked_users` (
 
 LOCK TABLES `blocked_users` WRITE;
 /*!40000 ALTER TABLE `blocked_users` DISABLE KEYS */;
-INSERT INTO `blocked_users` VALUES (9,1),(1,9),(3,9);
+INSERT INTO `blocked_users` VALUES (9,1),(1,9),(3,9),(1,5);
 /*!40000 ALTER TABLE `blocked_users` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -274,7 +306,7 @@ CREATE TABLE `users_groupe` (
 
 LOCK TABLES `users_groupe` WRITE;
 /*!40000 ALTER TABLE `users_groupe` DISABLE KEYS */;
-INSERT INTO `users_groupe` VALUES (1,1),(1,2),(1,3),(1,4),(1,5),(2,1),(2,2),(2,3),(2,4),(2,5);
+INSERT INTO `users_groupe` VALUES (1,1),(1,2),(1,3),(1,4),(1,5),(2,2),(2,3),(2,4),(2,5),(3,1),(4,1),(5,1),(2,1);
 /*!40000 ALTER TABLE `users_groupe` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -301,6 +333,42 @@ LOCK TABLES `users_status` WRITE;
 INSERT INTO `users_status` VALUES (1,'доступен'),(2,'занят'),(3,'на совещании'),(4,'сплю'),(5,'на занятии');
 /*!40000 ALTER TABLE `users_status` ENABLE KEYS */;
 UNLOCK TABLES;
+
+--
+-- Final view structure for view `age`
+--
+
+/*!50001 DROP VIEW IF EXISTS `age`*/;
+/*!50001 SET @saved_cs_client          = @@character_set_client */;
+/*!50001 SET @saved_cs_results         = @@character_set_results */;
+/*!50001 SET @saved_col_connection     = @@collation_connection */;
+/*!50001 SET character_set_client      = utf8mb4 */;
+/*!50001 SET character_set_results     = utf8mb4 */;
+/*!50001 SET collation_connection      = utf8mb4_0900_ai_ci */;
+/*!50001 CREATE ALGORITHM=UNDEFINED */
+/*!50013 DEFINER=`root`@`localhost` SQL SECURITY DEFINER */
+/*!50001 VIEW `age` AS select `users`.`id` AS `id`,`users`.`first_name` AS `first_name`,`users`.`last_name` AS `last_name`,round(((to_days(now()) - to_days(`users`.`birthday`)) / 365.25),0) AS `age` from `users` */;
+/*!50001 SET character_set_client      = @saved_cs_client */;
+/*!50001 SET character_set_results     = @saved_cs_results */;
+/*!50001 SET collation_connection      = @saved_col_connection */;
+
+--
+-- Final view structure for view `all_chats`
+--
+
+/*!50001 DROP VIEW IF EXISTS `all_chats`*/;
+/*!50001 SET @saved_cs_client          = @@character_set_client */;
+/*!50001 SET @saved_cs_results         = @@character_set_results */;
+/*!50001 SET @saved_col_connection     = @@collation_connection */;
+/*!50001 SET character_set_client      = utf8mb4 */;
+/*!50001 SET character_set_results     = utf8mb4 */;
+/*!50001 SET collation_connection      = utf8mb4_0900_ai_ci */;
+/*!50001 CREATE ALGORITHM=UNDEFINED */
+/*!50013 DEFINER=`root`@`localhost` SQL SECURITY DEFINER */
+/*!50001 VIEW `all_chats` AS select `group_chat`.`id` AS `id`,`group_chat`.`from_user_id` AS `from_user_id`,`group_chat`.`to_group_id` AS `to_group_id`,`group_chat`.`body` AS `body`,`group_chat`.`media_id` AS `media_id`,`group_chat`.`created_at` AS `created_at` from `group_chat` where (`group_chat`.`media_id` is not null) union all select `pc`.`id` AS `id`,`pc`.`from_user_id` AS `from_user_id`,`pc`.`to_user_id` AS `to_user_id`,`pc`.`body` AS `body`,`pc`.`media_id` AS `media_id`,`pc`.`created_at` AS `created_at` from `personal_chat` `pc` where (`pc`.`media_id` is not null) */;
+/*!50001 SET character_set_client      = @saved_cs_client */;
+/*!50001 SET character_set_results     = @saved_cs_results */;
+/*!50001 SET collation_connection      = @saved_col_connection */;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
 
 /*!40101 SET SQL_MODE=@OLD_SQL_MODE */;
@@ -311,4 +379,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2021-11-13 20:55:35
+-- Dump completed on 2021-11-18  0:30:17
